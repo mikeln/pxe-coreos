@@ -1,0 +1,15 @@
+#
+# MLN CoreOS Boot 5/26/2015
+#
+DISPLAY coreos-alpha/boot-screens/boot.msg
+
+DEFAULT coreos
+LABEL coreos
+  menu label ^Install
+  menu default
+  kernel coreos-alpha/coreos_production_pxe.vmlinuz
+  append initrd=coreos-alpha/coreos_production_pxe_image.cpio.gz console=tty0
+#  append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://example.com/pxe-cloud-config.yml
+
+PROMPT 1
+TIMEOUT 0
