@@ -190,4 +190,11 @@ The most relevant file to edit is: `txt.cfg`
 ## Install
 sudo cp the directories from this project to the correct location on you tftp server.
 
+## Configure DHCP for PXE
+
+On the firewall DHCP setup:
+* Set `Next server` to the name or IP of the tftp server
+* Set the `Filename` to `pxelinux.0`
+
+
         
