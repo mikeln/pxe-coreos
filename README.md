@@ -165,6 +165,28 @@ PXE Configuration
         
 Note: `default` may link to either `syslinux.cfg` (for menu selection start) or `fastboot.cfg` (which just starts up CoreOS Alpha).   Also, `fastboot.cfg` only needs `boot.msg`.  `syslinux.cfg` needs all the other files listed due to VGA menus.
 
+The most relevant file to edit is: `txt.cfg`
+
+    default install-alpha
+    label install-alpha
+	    menu label ^Install Alpha Channel
+	    menu default
+	    kernel coreos-alpha/coreos_production_pxe.vmlinuz
+	    append initrd=coreos-alpha/coreos_production_pxe_image.cpio.gz console=tty0
+        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://example.com/pxe-cloud-config.yml
+
+    label install-beta
+    	menu label ^Install Beta Channel
+    	kernel coreos-beta/coreos_production_pxe.vmlinuz
+    	append initrd=coreos-beta/coreos_production_pxe_image.cpio.gz console=tty0
+        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://example.com/pxe-cloud-config.yml
+
+    label install-stable
+    	menu label ^Install Stable Channel
+    	kernel coreos-stable/coreos_production_pxe.vmlinuz
+    	append initrd=coreos-stable/coreos_production_pxe_image.cpio.gz console=tty0
+        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://example.com/pxe-cloud-config.yml
+
 ## Install
 sudo cp the directories from this project to the correct location on you tftp server.
 
