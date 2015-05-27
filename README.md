@@ -15,6 +15,10 @@ This was created on the following network setup:
 * OS-X Mac Mini (Server no necessary)
 * Bare Metal or VirtualBox VM
 
+## Pending
+* Enable an HTTP server to allow download of `cloud-config` needed during CoreOS startup.
+* TBD ^^^^^^^^
+
 ## Setup 
 ### Enable a tftp server
 OS-X comes with a tftp server installed, all you have to do is enable it.
