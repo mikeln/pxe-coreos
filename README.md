@@ -196,5 +196,6 @@ On the firewall DHCP setup:
 * Set `Next server` to the name or IP of the tftp server
 * Set the `Filename` to `pxelinux.0`
 
-
-        
+## Testing
+### VirtualBox
+Create a new VM with no disk drive, and set the network to `bridged` and `netboot`.
