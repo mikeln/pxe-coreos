@@ -199,3 +199,5 @@ On the firewall DHCP setup:
 ## Testing
 ### VirtualBox
 Create a new VM with no disk drive, and set the network to `bridged` and `netboot`.
+
+![VirtualBox Example](./pxecore.png?raw=true)
