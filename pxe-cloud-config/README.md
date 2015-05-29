@@ -1,1 +1,1 @@
-This file resized on the HTTP web server.
+This file resides on the HTTP web server.
