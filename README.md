@@ -12,12 +12,11 @@ This was created on the following network setup:
 * m0n0wall (pfsense) firewall
 	* LAN Subnet
 	* DHCP
-* OS-X Mac Mini (Server no necessary)
+* OS-X Mac Mini 
+	* tftp - pxe boot files
+	* http - cloud configuration files
 * Bare Metal or VirtualBox VM
 
-## Pending
-* Enable an HTTP server to allow download of `cloud-config` needed during CoreOS startup.
-* TBD ^^^^^^^^
 
 ## Setup 
 ### Enable a tftp server
@@ -173,7 +172,7 @@ The most relevant file to edit is: `txt.cfg`
 	    menu default
 	    kernel coreos-alpha/coreos_production_pxe.vmlinuz
 	    append initrd=coreos-alpha/coreos_production_pxe_image.cpio.gz console=tty0
-        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://example.com/pxe-cloud-config.yml
+        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://<your server>/pxe-cloud-config.yml
 
     label install-beta
     	menu label ^Install Beta Channel
