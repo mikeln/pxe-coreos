@@ -12,12 +12,11 @@ This was created on the following network setup:
 * m0n0wall (pfsense) firewall
 	* LAN Subnet
 	* DHCP
-* OS-X Mac Mini (Server no necessary)
+* OS-X Mac Mini 
+	* tftp - pxe boot files
+	* http - cloud configuration files
 * Bare Metal or VirtualBox VM
 
-## Pending
-* Enable an HTTP server to allow download of `cloud-config` needed during CoreOS startup.
-* TBD ^^^^^^^^
 
 ## Setup 
 ### Enable a tftp server
@@ -165,7 +164,39 @@ PXE Configuration
         
 Note: `default` may link to either `syslinux.cfg` (for menu selection start) or `fastboot.cfg` (which just starts up CoreOS Alpha).   Also, `fastboot.cfg` only needs `boot.msg`.  `syslinux.cfg` needs all the other files listed due to VGA menus.
 
+The most relevant file to edit is: `txt.cfg`
+
+    default install-alpha
+    label install-alpha
+	    menu label ^Install Alpha Channel
+	    menu default
+	    kernel coreos-alpha/coreos_production_pxe.vmlinuz
+	    append initrd=coreos-alpha/coreos_production_pxe_image.cpio.gz console=tty0
+        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://<your server>/pxe-cloud-config.yml
+
+    label install-beta
+    	menu label ^Install Beta Channel
+    	kernel coreos-beta/coreos_production_pxe.vmlinuz
+    	append initrd=coreos-beta/coreos_production_pxe_image.cpio.gz console=tty0
+        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://example.com/pxe-cloud-config.yml
+
+    label install-stable
+    	menu label ^Install Stable Channel
+    	kernel coreos-stable/coreos_production_pxe.vmlinuz
+    	append initrd=coreos-stable/coreos_production_pxe_image.cpio.gz console=tty0
+        #	append initrd=coreos-coreos_production_pxe_image.cpio.gz cloud-config-url=http://example.com/pxe-cloud-config.yml
+
 ## Install
 sudo cp the directories from this project to the correct location on you tftp server.
 
-        
+## Configure DHCP for PXE
+
+On the firewall DHCP setup:
+* Set `Next server` to the name or IP of the tftp server
+* Set the `Filename` to `pxelinux.0`
+
+## Testing
+### VirtualBox
+Create a new VM with no disk drive, and set the network to `bridged` and `netboot`.
+
+![VirtualBox Example](./pxecore.png?raw=true)
