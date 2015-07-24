@@ -55,24 +55,32 @@ write_files:
 coreos:
   etcd2: 
     name: samnuc01
-    discover-srv: mineco.lab
-    initial-advertise-peer-urls: http://samnuc01.mineco.lab:2380 \
-    initial-cluster-token: etcd-cluster-1 \
-    initial-cluster-state: new \
-    advertise-client-urls: http://samnuc01.mineco.lab:2379 \
-    listen-client-urls: http://samnuc01.mineco.lab:2379 \
+    discovery-srv: mineco.lab
+    initial-advertise-peer-urls: http://samnuc01.mineco.lab:2380
+    initial-cluster-token: etcd-cluster-1
+    initial-cluster-state: new
+    advertise-client-urls: http://samnuc01.mineco.lab:2379, http://127.0.0.1:2379
+    listen-client-urls: http://samnuc01.mineco.lab:2379, http://127.0.0.1:2379
     listen-peer-urls: http://samnuc01.mineco.lab:2380
+  fleet:
+    metadata: "role=boss,kube=role=master"
   units:
     - name: etcd2.service
       command: start
     - name: fleet.service
+      command: start
+    - name: flanneld.service
+      drop-ins:
+        - name: 50-network-config.conf
+          content: |
+            [Service]
+            ExecStartPre=/usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.55.0.0/16" }'
       command: start
     - name: nameservers.network
       content: |
          [Network]
          DNS=10.22.6.1
          DHCP=ipv4
-
+hostname: samnuc01
 ssh_authorized_keys:
   - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9WsDHltIB7PVFCZQpNkjbBxaWyQeh8ihjw9df5zvZM6TRz80QNM9XceNmjeh0zxocMflnDY19rkeKvy53yd7LFMThand0nLKxgPmsJUM+rkLyOQuDAxEBUWFjSiuxFsWdRYgAFDIaholsLTj9GKiNjntVDXYnHJnvu+g42aaUcq4PKex2meaEDDk6K8xDWj1th2f9GtE5/pWCZZTH7VcTMiX4PrU7EW5guNQdkFRj9a/Hv3ZEwrNWaJvcXIHKFWcA/VyDfrJ4RItTrjIRSJiD6vIZHsQ7mFQsUJOL4IWzE/i38ywgZeDalhlPYwRvFo1zknUwvRieZeSItqq4S7CB mikel_nelson@l2067532491-mn.mineco.lab
-
