@@ -59,7 +59,7 @@ coreos:
     initial-advertise-peer-urls: http://samnuc01.mineco.lab:2380
     initial-cluster-token: etcd-cluster-1
     initial-cluster-state: new
-    advertise-client-urls: http://samnuc01.mineco.lab:2379, http://127.0.0.1:2379
+    advertise-client-urls: http://samnuc01.mineco.lab:2379
     listen-client-urls: http://samnuc01.mineco.lab:2379, http://127.0.0.1:2379
     listen-peer-urls: http://samnuc01.mineco.lab:2380
   fleet:
