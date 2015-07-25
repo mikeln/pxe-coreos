@@ -60,10 +60,12 @@ coreos:
     initial-cluster-token: etcd-cluster-1
     initial-cluster-state: new
     advertise-client-urls: http://samnuc01.mineco.lab:2379
-    listen-client-urls: http://samnuc01.mineco.lab:2379, http://127.0.0.1:2379
+    # important: IP:2379 for external, localhost:2379 for etcdctl, localhost:4001 for fleet
+    listen-client-urls: http://samnuc01.mineco.lab:2379, http://127.0.0.1:2379, http://127.0.0.1:4001
     listen-peer-urls: http://samnuc01.mineco.lab:2380
   fleet:
     metadata: "role=boss,kube=role=master"
+    etcd_request_timeout: 5.0
   units:
     - name: etcd2.service
       command: start
