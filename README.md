@@ -3,6 +3,8 @@ PXE tftp os-x setup
 
 Mikel Nelson 5/26/2015
 
+![image](kubnuc.jpg)
+
 ## Purpose 
 This Repository attempts to capture the setup of a Linux PXE boot system to load CoreOS onto net booted Machines/VMs.
 
