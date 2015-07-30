@@ -212,7 +212,7 @@ Based on these instructions: [https://github.com/GoogleCloudPlatform/kubernetes/
 The above Kubernetes instructions need to be modified as follows:
 
 * etcd2 is running as a service on node-01, and proxy on all other nodes (vs container)
-* lanneld is runnins as a service on all nodes (vs container)
+* flanneld is running as a service on all nodes (vs container)
 * You can avoid all the delete/etc/ sockets etc and proceed to the running sections.
 * Use image quay.io/mikeln/hypercube:v1.0.1  (built via the mikeln/kube-local-build project)
 * Make sure you set a FQDN that DNS can resolve to an IP address for each node.  E.g. for my setup:
