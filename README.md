@@ -202,3 +202,56 @@ On the firewall DHCP setup:
 Create a new VM with no disk drive, and set the network to `bridged` and `netboot`.
 
 ![VirtualBox Example](./pxecore.png?raw=true)
+
+# Running A Kubernetes Cluster
+This section superceeds the previous.
+
+Based on these instructions: [https://github.com/GoogleCloudPlatform/kubernetes/blob/release-1.0/docs/getting-started-guides/docker-multinode/master.md](https://github.com/GoogleCloudPlatform/kubernetes/blob/release-1.0/docs/getting-started-guides/docker-multinode/master.md)
+
+## Modifications
+The above Kubernetes instructions need to be modified as follows:
+
+* etcd2 is running as a service on node-01, and proxy on all other nodes (vs container)
+* lanneld is runnins as a service on all nodes (vs container)
+* You can avoid all the delete/etc/ sockets etc and proceed to the running sections.
+* Use image quay.io/mikeln/hypercube:v1.0.1  (built via the mikeln/kube-local-build project)
+* Make sure you set a FQDN that DNS can resolve to an IP address for each node.  E.g. for my setup:
+	* samnuc01.mineco.lab  10.22.6.241
+	* samnuc02.mineco.lab  10.22.6.242
+	* samnuc03.mineco.lab  10.22.6.243
+	* NOTE: you can use `hostnamectl set-hostname` on coreos after the fact.
+* Master e.g.
+	*	`docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  quay.io/mikeln/hyperkube:v1.0.1 /hyperkube kubelet --api_servers=http://localhost:8080 --v=2 --address=0.0.0.0 --hostname_override=$(hostname -i) --enable_server --config=/etc/kubernetes/manifests-multi`
+	* `docker run -d --net=host --privileged quay.io/mikeln/hyperkube:v1.0.1 /hyperkube proxy --master=http://127.0.0.1:8080 --v=2`
+* Node e.g
+	* `sudo docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock quay.io/mikeln/hyperkube:v1.0.1 /hyperkube kubelet --api_servers=http://10.22.6.241:8080 --v=2 --address=0.0.0.0 --enable_server --hostname_override=$(hostname -i)`
+	* `sudo docker run -d --net=host --privileged quay.io/mikeln/hyperkube:v1.0.1 /hyperkube proxy --master=http://10.22.6.241:8080 --v=2`
+	
+
+## Example Output
+````
+l2067532491-mn:hyperkube mikel_nelson$ kub get nodes -o wide
+NAME          LABELS                               STATUS
+10.22.6.241   kubernetes.io/hostname=10.22.6.241   Ready
+10.22.6.242   kubernetes.io/hostname=10.22.6.242   Ready
+10.22.6.243   kubernetes.io/hostname=10.22.6.243   Ready
+````
+````
+l2067532491-mn:hyperkube mikel_nelson$ kub get pods -o wide
+NAME                     READY     STATUS    RESTARTS   AGE       NODE
+k8s-master-10.22.6.241   3/3       Running   0          13m       10.22.6.241
+nginx-940xj              1/1       Running   0          1m        10.22.6.242
+nginx-eo44c              1/1       Running   0          7m        10.22.6.241
+nginx-k3ypx              1/1       Running   0          7m        10.22.6.243
+````
+````
+l2067532491-mn:hyperkube mikel_nelson$ kub get services
+NAME         LABELS                                    SELECTOR    IP(S)        PORT(S)
+kubernetes   component=apiserver,provider=kubernetes   <none>      10.0.0.1     443/TCP
+nginx        run=nginx                                 run=nginx   10.0.0.125   80/TCP
+````
+````
+l2067532491-mn:hyperkube mikel_nelson$ kub get rc
+CONTROLLER   CONTAINER(S)   IMAGE(S)   SELECTOR    REPLICAS
+nginx        nginx          nginx      run=nginx   3
+`````
