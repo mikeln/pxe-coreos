@@ -221,11 +221,15 @@ The above Kubernetes instructions need to be modified as follows:
 	* samnuc03.mineco.lab  10.22.6.243
 	* NOTE: you can use `hostnamectl set-hostname` on coreos after the fact.
 * Master e.g.
-	*	`docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  quay.io/mikeln/hyperkube:v1.0.1 /hyperkube kubelet --api_servers=http://localhost:8080 --v=2 --address=0.0.0.0 --hostname_override=$(hostname -i) --enable_server --config=/etc/kubernetes/manifests-multi`
+	*	`docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock  quay.io/mikeln/hyperkube:v1.0.1 /hyperkube kubelet --api_servers=http://localhost:8080 --v=2 --address=0.0.0.0 --hostname_override=$(hostname -i) --enable_server --config=/etc/kubernetes/manifests-multi --cluster_domain=kubernetes.local --cluster_dns=10.100.0.10`
 	* `docker run -d --net=host --privileged quay.io/mikeln/hyperkube:v1.0.1 /hyperkube proxy --master=http://127.0.0.1:8080 --v=2`
 * Node e.g
-	* `sudo docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock quay.io/mikeln/hyperkube:v1.0.1 /hyperkube kubelet --api_servers=http://10.22.6.241:8080 --v=2 --address=0.0.0.0 --enable_server --hostname_override=$(hostname -i)`
+	* `sudo docker run --net=host -d -v /var/run/docker.sock:/var/run/docker.sock quay.io/mikeln/hyperkube:v1.0.1 /hyperkube kubelet --api_servers=http://10.22.6.241:8080 --v=2 --address=0.0.0.0 --enable_server --hostname_override=$(hostname -i) --cluster_domain=kubernetes.local --cluster_dns=10.100.0.10`
 	* `sudo docker run -d --net=host --privileged quay.io/mikeln/hyperkube:v1.0.1 /hyperkube proxy --master=http://10.22.6.241:8080 --v=2`
+	
+* skydns
+	* use kraken-services/skydns  but make sure master is set to the correct master IP.
+	* dns is set to 10.100.0.10
 	
 
 ## Example Output

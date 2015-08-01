@@ -1,0 +1,98 @@
+# based on https://github.com/GoogleCloudPlatform/kubernetes/blob/master/cluster/addons/dns/skydns-rc.yaml.in
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    k8s-app: kube-dns-v3
+    kubernetes.io/cluster-service: "true"
+  name: kube-dns-v3
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    k8s-app: kube-dns
+    version: v3
+  template:
+    metadata:
+      labels:
+        k8s-app: kube-dns
+        version: v3
+        kubernetes.io/color: FFFF66
+        kubernetes.io/cluster-service: "true"
+    spec:
+      containers:
+        - name: etcd
+          resources:
+            limits:
+              cpu: 100m
+              memory: 50Mi
+          image: gcr.io/google_containers/etcd:2.0.9
+          command:
+            - /usr/local/bin/etcd
+            - -data-dir
+            - /var/etcd/data
+            - -listen-client-urls
+            - http://127.0.0.1:2379,http://127.0.0.1:4001
+            - -advertise-client-urls
+            - http://127.0.0.1:2379,http://127.0.0.1:4001
+            - -initial-cluster-token
+            - skydns-etcd
+          volumeMounts:
+            - name: etcd-storage
+              mountPath: /var/etcd/data
+        - name: kube2sky
+          resources:
+            limits:
+              cpu: 100m
+              memory: 50Mi
+          image: gcr.io/google_containers/kube2sky:1.11
+          # command: "/kube2sky"
+          args:
+            - -domain=kubernetes.local
+            - -kube_master_url=http://10.22.6.241:8080
+            # - -kubecfg_file=/etc/dns_token/kubeconfig
+          # volumeMounts:
+          # - mountPath: /etc/dns_token
+            # name: dns-token
+            # readOnly: true
+        - name: skydns
+          resources:
+            limits:
+              cpu: 100m
+              memory: 50Mi
+          image: gcr.io/google_containers/skydns:2015-03-11-001
+          # command: "/skydns"
+          args:
+            - -machines=http://localhost:4001
+            - -addr=0.0.0.0:53
+            - -domain=kubernetes.local
+          ports:
+            - containerPort: 53
+              name: dns
+              protocol: UDP
+            - containerPort: 53
+              name: dns-tcp
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+        - name: healthz
+          image: gcr.io/google_containers/exechealthz:1.0
+          resources:
+            limits:
+              cpu: 10m
+              memory: 20Mi
+          args:
+            - -cmd=nslookup kubernetes.default.svc.kubernetes.local localhost >/dev/null
+            - -port=8080
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+      dnsPolicy: Default  # Don't use cluster DNS.
+      volumes:
+        - name: etcd-storage
+          emptyDir: {}
